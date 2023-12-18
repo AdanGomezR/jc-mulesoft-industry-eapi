@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="a2cdc6fd-3c9a-410f-9ff5-81309154b872" basePath="/mocking/api/v1/links/bad971ba-3c36-4cfe-a36d-d9ba0dce66cb">
+		<http:request-connection protocol="HTTPS" host="anypoint.mulesoft.com"/>
+	</http:request-config>
+	<sub-flow name="commonsSub_Flow" doc:id="36484cf5-36c7-4ae6-b113-484b4e4d6a48" >
+		<ee:transform doc:name="Transform Message" doc:id="fa4b9a10-ee6a-410b-8f9d-31f2c5672876" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="customHeaders" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	client_id: vars.ClientId,
+	client_secret: vars.ClientSecret
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Request" doc:id="631250e3-34d9-4819-8413-d81d4b449f58" message="#[vars.featureName] Request : #[payload]"/>
+		<http:request method="#[vars.httpMethod]" doc:name="Request" doc:id="665bb7fc-302c-402b-aa1b-fc8bb7928ff6" config-ref="HTTP_Request_configuration" path="#[vars.resourceUrl]">
+			<http:headers ><![CDATA[#[vars.customHeaders default {}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[vars.uriParams default {}]]]></http:uri-params>
+			<http:query-params ><![CDATA[#[vars.queryParams default {}]]]></http:query-params>
+		</http:request>
+		<logger level="INFO" doc:name="Response" doc:id="b562cc5e-e1a3-470a-85e4-11dd1af82014" message="#[vars.featureName] Response : #[payload]"/>
+	</sub-flow>
+</mule>

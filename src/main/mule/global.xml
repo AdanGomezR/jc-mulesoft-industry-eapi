@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
+	 <http:listener-config name="api-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8081"/>
+    </http:listener-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="9d6d3a17-de8b-4b62-bd34-6f75f3add5e5" file="environments/${env}.yaml" />
+	<api-gateway:autodiscovery apiId="${secure::jc-mulesoft-industry-eapi.anypoint.autodiscovery.apiId}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="19d21d10-a3ec-454e-bd85-599f40b81952" flowRef="api-main" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="8220dbdb-a548-4bee-9a98-4946499e1c59" file="environments/${env}.yaml" key="${securePlaceholder.key}"/>
+	<http:listener-config name="HTTPS_Listener_config" doc:name="HTTP Listener config" doc:id="680288dc-107c-4a5e-bf81-74712e5cb2a0" >
+		<http:listener-connection protocol="HTTPS" host="0.0.0.0" port="8091" >
+			<tls:context >
+				<tls:trust-store path="${secure::trust.store.path}" password="${secure::trust.store.password}" type="pkcs12" insecure="true"/>
+				<tls:key-store path="${secure::key.store.path}" keyPassword="${secure::key.store.keyPassword}" password="${secure::key.store.password}" type="pkcs12" alias="${secure::key.store.alias}"/>
+			</tls:context>
+		</http:listener-connection>
+	</http:listener-config>
+	
+</mule>

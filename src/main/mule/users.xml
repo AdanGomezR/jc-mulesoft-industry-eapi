@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<sub-flow name="get-users-sub-flow" doc:id="7928c333-051a-4a79-abac-b29770e7f589" >
+		<ee:transform
+			doc:name="Transform message"
+			doc:id="2a49936e-874e-4eb5-9bc5-e9dbc0502931">
+			<ee:message>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="httpMethod" ><![CDATA[%dw 2.0
+output application/java
+---
+'GET']]></ee:set-variable>
+				<ee:set-variable variableName="resourceUrl" ><![CDATA[%dw 2.0
+output application/java
+---
+'/users']]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="commonsSub_Flow" doc:id="17b343d9-23d9-469f-86ad-55ef60802f2f" name="commonsSub_Flow"/>
+		<ee:transform doc:name="Transform Message" doc:id="aead2319-24ff-4780-b298-e5fb533cc511" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	meta: {
+		messages: if (payload.meta.messages != null)
+		 payload.meta.messages map ((message , indexOfMessage) -> {
+			code: message.code,
+			description: message.description,
+			level: message.level
+		}) else null,
+		status: payload.meta.status
+	},
+	data: {
+		users: if ( payload.data.users != null)
+		payload.data.users map ((user , indexOfUser) -> {
+			username: user.username,
+			id: user.id,
+			name: user.name
+		}) else null
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+	<sub-flow name="post-user-sub-flow" doc:id="05d1c6b1-0fe2-4042-90b4-6be2fcf2dc58" >
+		<ee:transform
+			doc:name="Transform message"
+			doc:id="e027adbb-62bf-4bb0-99e1-3ada0c8d2985">
+			<ee:message>
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "data": {
+    "user": {
+      "username": payload.data.user.username,
+      "id": payload.data.user.id,
+      "name": payload.data.user.name
+    }
+  }
+}]]></ee:set-payload>
+
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="httpMethod" ><![CDATA[%dw 2.0
+output application/java
+---
+'POST']]></ee:set-variable>
+				<ee:set-variable variableName="resourceUrl" ><![CDATA[%dw 2.0
+output application/java
+---
+'/user']]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="commonsSub_Flow" doc:id="5a16e36d-b1ae-4c33-b6b9-933e358dfff8" name="commonsSub_Flow"/>
+		<ee:transform doc:name="Transform Message" doc:id="87b9b0b0-c337-43a5-b334-771d02f7f965" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	meta: {
+		messages: if (payload.meta.messages != null)
+		 payload.meta.messages map ((message , indexOfMessage) -> {
+			code: message.code,
+			description: message.description,
+			level: message.level
+		}) else null,
+		status: payload.meta.status
+	},
+	data: payload.data
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+	<sub-flow name="patch-user-id-sub-flow" doc:id="2a111f3b-bc52-4915-a3c3-9161730a18ae" >
+		<ee:transform
+			doc:name="Transform message"
+			doc:id="107134b1-6051-4a63-8994-0a540d9037f9">
+			<ee:message>
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "data": {
+    "user": {
+      "username": payload.data.user.username,
+      "id": payload.data.user.id,
+      "name": payload.data.user.name
+    }
+  }
+}]]></ee:set-payload>
+
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="httpMethod" ><![CDATA[%dw 2.0
+output application/java
+---
+'PATCH']]></ee:set-variable>
+				<ee:set-variable variableName="resourceUrl" ><![CDATA[%dw 2.0
+output application/java
+---
+'/user/{id}']]></ee:set-variable>
+				<ee:set-variable variableName="uriParams" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	id : vars.id
+}]]></ee:set-variable>
+			
+</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="commonsSub_Flow" doc:id="846579f3-c4c1-4bed-8e35-c3a531680c81" name="commonsSub_Flow"/>
+		<ee:transform doc:name="Transform Message" doc:id="ed18ca95-5ac2-43f0-b706-c0dd261aa39b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	meta: {
+		messages: if (payload.meta.messages != null)
+		 payload.meta.messages map ((message , indexOfMessage) -> {
+			code: message.code,
+			description: message.description,
+			level: message.level
+		}) else null,
+		status: payload.meta.status
+	},
+	data: payload.data
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+	<sub-flow name="delete-user-sub-flow" doc:id="1cda0a4a-7574-4239-8e14-ef7bf95b0564" >
+		<ee:transform
+			doc:name="Transform message"
+			doc:id="ac2b4f00-d592-4e71-995a-ef66dc6854e6">
+			<ee:message>
+
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="httpMethod" ><![CDATA[%dw 2.0
+output application/java
+---
+'DELETE']]></ee:set-variable>
+				<ee:set-variable variableName="resourceUrl" ><![CDATA[%dw 2.0
+output application/java
+---
+'/user/{id}']]></ee:set-variable>
+				<ee:set-variable variableName="uriParams" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	id : vars.id
+}]]></ee:set-variable>
+			
+</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="commonsSub_Flow" doc:id="c7657689-cdff-4d0a-86bc-68f323c86445" name="commonsSub_Flow"/>
+		<ee:transform doc:name="Transform Message" doc:id="b2c8978a-eb5d-45bf-86e4-8d70c76e5a7b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	meta: {
+		messages: if (payload.meta.messages != null)
+		 payload.meta.messages map ((message , indexOfMessage) -> {
+			code: message.code,
+			description: message.description,
+			level: message.level
+		}) else null,
+		status: payload.meta.status
+	},
+	data: payload.data
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+</mule>

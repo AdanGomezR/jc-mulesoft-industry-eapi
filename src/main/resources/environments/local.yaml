@@ -1,0 +1,8 @@
+jc-mulesoft-industry-eapi:
+  anypoint:
+    name: "jc-mulesoft-industry-eapi"
+    basepath: "/api"
+    autodiscovery:
+      apiId: "19179683"
+    listener:
+      config_ref: "jc-mulesoft-industry-eapi-https"
